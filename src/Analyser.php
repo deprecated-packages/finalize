@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace TomasVotruba\Finalize;
 
-use Throwable;
 use PhpParser\NodeTraverser;
 use PhpParser\Parser;
 use SebastianBergmann\LinesOfCode\Counter;
+use Throwable;
 use TomasVotruba\Finalize\NodeVisitor\StructureNodeVisitor;
 use Webmozart\Assert\Assert;
 
