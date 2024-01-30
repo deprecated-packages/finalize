@@ -1,0 +1,51 @@
+{
+    "name": "tomasvotruba/finalize",
+    "description": "Finalize classes except extended classes and entities - with full project context",
+    "license": "MIT",
+    "bin": [
+        "bin/finalize",
+        "bin/finalize.php"
+    ],
+    "require": {
+        "php": "^8.2",
+        "symfony/console": "^6.3",
+        "symfony/finder": "^6.3",
+        "illuminate/container": "^10.35",
+        "webmozart/assert": "^1.11",
+        "nikic/php-parser": "^4.18"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5",
+        "rector/rector": "^0.19.5",
+        "phpstan/phpstan": "^1.10.56",
+        "symplify/easy-coding-standard": "^12.1",
+        "tracy/tracy": "^2.10",
+        "tomasvotruba/class-leak": "^0.2",
+        "phpstan/extension-installer": "^1.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "TomasVotruba\\Finalize\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "TomasVotruba\\Finalize\\Tests\\": "tests"
+        },
+        "files": [
+            "tests/functions.php"
+        ]
+    },
+    "scripts": {
+        "check-cs": "vendor/bin/ecs check --ansi",
+        "fix-cs": "vendor/bin/ecs check --fix --ansi",
+        "phpstan": "vendor/bin/phpstan analyze --ansi",
+        "rector": "vendor/bin/rector --dry-run --ansi"
+    },
+    "config": {
+        "platform-check": false,
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        }
+    }
+}
