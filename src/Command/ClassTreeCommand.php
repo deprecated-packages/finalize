@@ -48,7 +48,7 @@ final class ClassTreeCommand extends Command
             $this->symfonyStyle->progressAdvance();
         };
 
-        $projectHash = Strings::webalize(implode('|', $paths));
+        $projectHash = Strings::webalize(getcwd());
 
         $parentClassNames = $this->parentClassResolver->resolve($phpFileInfos, $progressClosure);
         $entityClassNames = $this->entityClassResolver->resolve($phpFileInfos, $progressClosure);
