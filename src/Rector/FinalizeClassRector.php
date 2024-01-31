@@ -56,7 +56,10 @@ CODE_SAMPLE
         // load current project dumper parent and doctrine classes
         $finalizeFilePath = getcwd() . '/.finalize.json';
         if (! file_exists($finalizeFilePath)) {
-            throw new ShouldNotHappenException(sprintf('The "%s" file is missing. Run family-tree command first to create it', $finalizeFilePath));
+            throw new ShouldNotHappenException(sprintf(
+                'The "%s" file is missing. Run family-tree command first to create it',
+                $finalizeFilePath
+            ));
         }
 
         $projectHash = Strings::webalize(getcwd());

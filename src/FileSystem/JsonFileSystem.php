@@ -32,7 +32,9 @@ final class JsonFileSystem
         $json = Json::decode($fileContents, true);
 
         if (! isset($json[$projectHash])) {
-            throw new ShouldNotHappenException('Could not read data for current project. Run family-tree command first to create it');
+            throw new ShouldNotHappenException(
+                'Could not read data for current project. Run family-tree command first to create it'
+            );
         }
 
         return $json[$projectHash];
