@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace TomasVotruba\Finalize;
 
 /**
@@ -7,5 +9,4 @@ namespace TomasVotruba\Finalize;
  */
 class SomeEntity
 {
-
 }

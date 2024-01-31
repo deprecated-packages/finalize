@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TomasVotruba\Finalize\Tests\ParentClassResolver;
 
 use PHPUnit\Framework\TestCase;
+use TomasVotruba\Finalize\DependencyInjection\ContainerFactory;
 use TomasVotruba\Finalize\FileSystem\PhpFilesFinder;
 use TomasVotruba\Finalize\ParentClassResolver;
 
@@ -14,7 +15,10 @@ final class ParentClassResolverTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->parentClassResolver = new ParentClassResolver();
+        $containerFactory = new ContainerFactory();
+        $container = $containerFactory->create();
+
+        $this->parentClassResolver = $container->make(ParentClassResolver::class);
     }
 
     public function test(): void

@@ -6,7 +6,6 @@ namespace TomasVotruba\Finalize\NodeVisitor;
 
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
-use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\NodeVisitorAbstract;
 
@@ -20,6 +19,11 @@ final class EntityClassNameCollectingNodeVisitor extends NodeVisitorAbstract
     public function enterNode(Node $node)
     {
         if (! $node instanceof Class_) {
+            return null;
+        }
+
+        // must be named
+        if (! $node->namespacedName instanceof Node\Name) {
             return null;
         }
 

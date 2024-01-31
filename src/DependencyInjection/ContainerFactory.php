@@ -51,8 +51,11 @@ final class ContainerFactory
 
     public function hideDefaultCommands(Application $application): void
     {
-        $application->get('list')->setHidden();
-        $application->get('help')->setHidden();
-        $application->get('completion')->setHidden();
+        $application->get('list')
+            ->setHidden();
+        $application->get('help')
+            ->setHidden();
+        $application->get('completion')
+            ->setHidden();
     }
 }
