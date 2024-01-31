@@ -17,12 +17,8 @@ jobs:
                         run: composer validate --ansi
 
                     -
-                        name: 'Run "measure" command'
-                        run: bin/lines measure src --ansi
-
-                    -
-                        name: 'Run "measure" with json command'
-                        run: bin/lines measure src --json --ansi
+                        name: 'Run "class-tree" command'
+                        run: bin/finalize class-tree src --ansi
 
                     -
                         name: 'PHPStan'
