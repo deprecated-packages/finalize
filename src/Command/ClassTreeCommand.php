@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace TomasVotruba\Finalize\Command;
 
-use PhpParser\ParserFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
