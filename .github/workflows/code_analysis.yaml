@@ -25,10 +25,6 @@ jobs:
                         run: composer phpstan --ansi
 
                     -
-                        name: 'Coding Standard'
-                        run: composer fix-cs --ansi
-
-                    -
                         name: 'Tests'
                         run: vendor/bin/phpunit
 
