@@ -11,7 +11,7 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use TomasVotruba\Finalize\Console\Command\AnalyseCommand;
+use TomasVotruba\Finalize\Command\ClassTreeCommand;
 use TomasVotruba\Finalize\Helpers\PrivatesAccessor;
 
 final class ContainerFactory
@@ -34,7 +34,7 @@ final class ContainerFactory
         $container->singleton(Application::class, function (Container $container): Application {
             $application = new Application();
 
-            $vendorCommand = $container->make(AnalyseCommand::class);
+            $vendorCommand = $container->make(ClassTreeCommand::class);
             $application->add($vendorCommand);
 
             // remove basic command to make output clear
