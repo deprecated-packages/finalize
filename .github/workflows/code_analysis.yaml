@@ -18,7 +18,7 @@ jobs:
 
                     -
                         name: 'Run "class-tree" command'
-                        run: bin/finalize class-tree src --ansi
+                        run: bin/finalize detect src --ansi
 
                     -
                         name: 'PHPStan'
