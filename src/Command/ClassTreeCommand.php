@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TomasVotruba\Finalize\Command;
 
+use Nette\Utils\Strings;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -46,7 +47,9 @@ final class ClassTreeCommand extends Command
 
         $parentClassNames = $this->parentClassResolver->resolve($phpFileInfos, $progressClosure);
 
-        JsonFileSystem::writeCacheFile([
+        $projectHash = Strings::webalize(implode('|', $paths));
+
+        JsonFileSystem::writeCacheFile($projectHash, [
             'parent_class_names' => $parentClassNames,
         ]);
 

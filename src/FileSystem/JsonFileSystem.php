@@ -12,9 +12,13 @@ final class JsonFileSystem
     /**
      * @param array<string, mixed> $data
      */
-    public static function writeCacheFile(array $data): void
+    public static function writeCacheFile(string $projectHash, array $data): void
     {
-        $jsonContents = Json::encode($data, pretty: true);
+        $namespacedData = [
+            $projectHash => $data,
+        ];
+
+        $jsonContents = Json::encode($namespacedData, pretty: true);
         FileSystem::write(getcwd() . '/.finalize.json', $jsonContents);
     }
 }
