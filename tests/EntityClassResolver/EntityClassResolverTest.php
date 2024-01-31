@@ -30,9 +30,6 @@ final class EntityClassResolverTest extends TestCase
         $parentClassNames = $this->entityClassResolver->resolve($phpFileInfos, function () {
         });
 
-        $this->assertSame(
-            [AttributeMarkedEntity::class, DocMarkedEntity::class],
-            $parentClassNames
-        );
+        $this->assertSame([AttributeMarkedEntity::class, DocMarkedEntity::class], $parentClassNames);
     }
 }
