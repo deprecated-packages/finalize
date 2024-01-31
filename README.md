@@ -1,121 +1,34 @@
-# Lines
+# Finalize
 
-CLI tool for quick size measure of PHP project, runs anywhere
+Finalize classes in a safe way. We first look for those, that should be skipped:
 
-## What are killer features?
-
-* install anywhere - PHP 7.2? PHPUnit 6? Symfony 3? Not a problem, this package **has zero dependencies and works on PHP 7.2+**
-* get quick overview of your project size - no details, no complexity, just lines of code
-* get easy JSON output for further processing
-* we keep it simple, so you can enjoy reading - for more complex operation use static analysis like PHPStan
-
-<br>
+* classes who are in parent position
+* Doctrine entities by docblocks and attribute
 
 ## Install
 
-The package is scoped and downgraded to PHP 7.2. So you can install it anywhere with any set of dependencies:
-
 ```bash
-composer require tomasvotruba/lines --dev
+composer require tomasvotruba/finalize --dev
 ```
 
 ## Usage
 
-```bash
-vendor/bin/lines measure src
-```
-
-For short output:
+1. First run command, that detects parent classes, entities etc.
 
 ```bash
-vendor/bin/lines measure src --short
+vendor/bin/finalize detect src tests
 ```
 
-For json output, just add `--json`:
+It will generate `.finalize.json` files with all found classes, that should be skipped.
+
+<br>
+
+2. Run Rector with config that contains `TomasVotruba\Finalize\Rector\FinalizeClassRector` rule.
+
+Rector uses data from `.finalize.json` to keep used classes non final and finalize only the safe ones:
 
 ```bash
-vendor/bin/lines measure src --json
+vendor/bin/rector process --config vendor/tomasvotruba/finalize/config/prepared-rector.php
 ```
 
-Also, you can combine them (very handy for blog posts and tweets):
-
-```bash
-vendor/bin/lines measure src --short --json
-```
-
-## The Measured Items
-
-For the text output, you'll get data like these:
-
-```bash
-  Filesystem                                         count
-  Directories ......................................... 32
-  Files .............................................. 160
-
-  Lines of code                           count / relative
-  Code ................................... 15 521 / 70.9 %
-  Comments ................................ 6 372 / 29.1 %
-  Total .................................. 21 893 /  100 %
-
-  Structure                                          count
-  Namespaces .......................................... 32
-  Classes ............................................ 134
-   * Constants ........................................ 91
-   * Methods ....................................... 1 114
-  Interfaces .......................................... 20
-  Traits ............................................... 4
-  Enums ................................................ 1
-  Functions ........................................... 36
-  Global constants ..................................... 0
-
-  Methods                                 count / relative
-  Non-static .............................. 1 058 /   95 %
-  Static ..................................... 56 /    5 %
-
-  Public .................................... 875 / 78.5 %
-  Protected .................................. 90 /  8.1 %
-  Private ................................... 149 / 13.4 %
-```
-
-Or in a json format:
-
-```json
-{
-    "filesystem": {
-        "directories": 10,
-        "files": 15
-    },
-    "lines_of_code": {
-        "code": 1064,
-        "code_relative": 95.4,
-        "comments": 51,
-        "comments_relative": 4.6,
-        "total": 1115
-    },
-    "structure": {
-        "namespaces": 11,
-        "classes": 14,
-        "class_methods": 88,
-        "class_constants": 0,
-        "interfaces": 1,
-        "traits": 0,
-        "enums": 0,
-        "functions": 5,
-        "global_constants": 3
-    },
-    "methods_access": {
-        "non_static": 82,
-        "non_static_relative": 93.2,
-        "static": 6,
-        "static_relative": 6.8
-    },
-    "methods_visibility": {
-        "public": 70,
-        "public_relative": 79.5,
-        "protected": 2,
-        "protected_relative": 2.3,
-        "private": 16,
-        "private_relative": 18.2
-    }
-}
-```
+Do not keep this run in your main `rector.php`. Family map can change with any new class, e.g. some new class will come and it will be extended, and Rector would not finalize valid class.

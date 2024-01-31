@@ -15,7 +15,7 @@ use TomasVotruba\Finalize\FileSystem\JsonFileSystem;
 use TomasVotruba\Finalize\FileSystem\PhpFilesFinder;
 use TomasVotruba\Finalize\ParentClassResolver;
 
-final class ClassTreeCommand extends Command
+final class DetectCommand extends Command
 {
     public function __construct(
         private readonly SymfonyStyle $symfonyStyle,
@@ -27,8 +27,10 @@ final class ClassTreeCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('class-tree');
+        $this->setName('detect');
+
         $this->setDescription('Generate class family tree for provided project');
+
         $this->addArgument('paths', InputArgument::IS_ARRAY | InputArgument::REQUIRED, 'Paths to analyze');
     }
 
