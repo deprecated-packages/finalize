@@ -62,6 +62,7 @@ final class ClassTreeCommand extends Command
             'parent_class_names' => $parentClassNames,
         ]);
 
+        $this->symfonyStyle->newLine();
         $this->symfonyStyle->note(sprintf('Found %d parent classes', count($parentClassNames)));
         $this->symfonyStyle->success('Done');
 
