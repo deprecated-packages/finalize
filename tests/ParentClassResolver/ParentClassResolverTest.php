@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use TomasVotruba\Finalize\DependencyInjection\ContainerFactory;
 use TomasVotruba\Finalize\FileSystem\PhpFilesFinder;
 use TomasVotruba\Finalize\ParentClassResolver;
+use TomasVotruba\Finalize\Tests\ParentClassResolver\Fixture\SomeParentClass;
 
 final class ParentClassResolverTest extends TestCase
 {
@@ -29,7 +30,7 @@ final class ParentClassResolverTest extends TestCase
         });
 
         $this->assertSame(
-            ['TomasVotruba\Finalize\Tests\ParentClassResolver\Fixture\SomeParentClass'],
+            [SomeParentClass::class],
             $parentClassNames
         );
     }

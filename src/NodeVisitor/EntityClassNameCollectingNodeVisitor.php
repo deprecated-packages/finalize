@@ -27,8 +27,12 @@ final class EntityClassNameCollectingNodeVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        // @todo improve with attributes
         if ($this->hasEntityDocBlock($node)) {
+            $this->entityClassNames[] = $node->namespacedName->toString();
+            return null;
+        }
+
+        if ($this->hasEntityAttribute($node)) {
             $this->entityClassNames[] = $node->namespacedName->toString();
         }
 
@@ -61,6 +65,23 @@ final class EntityClassNameCollectingNodeVisitor extends NodeVisitorAbstract
 
             if (str_contains($docComment->getText(), 'Embeddable')) {
                 return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function hasEntityAttribute(Class_ $class): bool
+    {
+        foreach ($class->attrGroups as $attrGroup) {
+            foreach ($attrGroup->attrs as $attr) {
+                if (str_ends_with($attr->name->toString(), 'Entity')) {
+                    return true;
+                }
+
+                if (str_ends_with($attr->name->toString(), 'Embeddable')) {
+                    return true;
+                }
             }
         }
 
