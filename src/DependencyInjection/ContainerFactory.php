@@ -12,7 +12,6 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use TomasVotruba\Finalize\Command\ClassTreeCommand;
-use TomasVotruba\Finalize\Helpers\PrivatesAccessor;
 
 final class ContainerFactory
 {
@@ -22,8 +21,6 @@ final class ContainerFactory
     public function create(): Container
     {
         $container = new Container();
-
-        $this->emulateTokensOfOlderPHP();
 
         // console
         $container->singleton(
@@ -37,8 +34,8 @@ final class ContainerFactory
             $vendorCommand = $container->make(ClassTreeCommand::class);
             $application->add($vendorCommand);
 
-            // remove basic command to make output clear
-            $this->cleanupDefaultCommands($application);
+            // hide basic commands to make output clear
+            $this->hideDefaultCommands($application);
 
             return $application;
         });
@@ -52,29 +49,10 @@ final class ContainerFactory
         return $container;
     }
 
-    public function cleanupDefaultCommands(Application $application): void
+    public function hideDefaultCommands(Application $application): void
     {
-        PrivatesAccessor::propertyClosure($application, 'commands', static function (array $commands): array {
-            // remove default commands, as not needed here
-            unset($commands['completion']);
-            unset($commands['help']);
-            return $commands;
-        });
-    }
-
-    private function emulateTokensOfOlderPHP(): void
-    {
-        // define fallback constants for PHP 8.0 tokens in case of e.g. PHP 7.2 run
-        if (! defined('T_MATCH')) {
-            define('T_MATCH', 5000);
-        }
-
-        if (! defined('T_READONLY')) {
-            define('T_READONLY', 5010);
-        }
-
-        if (! defined('T_ENUM')) {
-            define('T_ENUM', 5015);
-        }
+        $application->get('list')->setHidden();
+        $application->get('help')->setHidden();
+        $application->get('completion')->setHidden();
     }
 }

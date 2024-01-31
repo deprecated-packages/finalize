@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use TomasVotruba\Finalize\EntityClassResolver;
 use TomasVotruba\Finalize\FileSystem\JsonFileSystem;
 use TomasVotruba\Finalize\FileSystem\PhpFilesFinder;
 use TomasVotruba\Finalize\ParentClassResolver;
@@ -19,6 +20,7 @@ final class ClassTreeCommand extends Command
     public function __construct(
         private readonly SymfonyStyle $symfonyStyle,
         private readonly ParentClassResolver $parentClassResolver,
+        private readonly EntityClassResolver $entityClassResolver,
     ) {
         parent::__construct();
     }
@@ -38,22 +40,27 @@ final class ClassTreeCommand extends Command
         $paths = (array) $input->getArgument('paths');
 
         $phpFileInfos = PhpFilesFinder::findPhpFileInfos($paths);
-        $this->symfonyStyle->progressStart(count($phpFileInfos));
+
+        // double to count for both parent and entity resolver
+        $this->symfonyStyle->progressStart(2 * count($phpFileInfos));
 
         $progressClosure = function () {
             $this->symfonyStyle->progressAdvance();
         };
 
-        $parentClassNames = $this->parentClassResolver->resolve($phpFileInfos, $progressClosure);
-
         $projectHash = Strings::webalize(implode('|', $paths));
+
+        $parentClassNames = $this->parentClassResolver->resolve($phpFileInfos, $progressClosure);
+        $entityClassNames = $this->entityClassResolver->resolve($phpFileInfos, $progressClosure);
 
         JsonFileSystem::writeCacheFile($projectHash, [
             'parent_class_names' => $parentClassNames,
+            'entity_class_names' => $entityClassNames,
         ]);
 
         $this->symfonyStyle->newLine();
         $this->symfonyStyle->note(sprintf('Found %d parent classes', count($parentClassNames)));
+        $this->symfonyStyle->note(sprintf('Found %d entity classes', count($entityClassNames)));
         $this->symfonyStyle->success('Done');
 
         return Command::SUCCESS;

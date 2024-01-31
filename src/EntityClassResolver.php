@@ -7,9 +7,9 @@ namespace TomasVotruba\Finalize;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use Symfony\Component\Finder\SplFileInfo;
-use TomasVotruba\Finalize\NodeVisitor\ParentClassNameCollectingNodeVisitor;
+use TomasVotruba\Finalize\NodeVisitor\EntityClassNameCollectingNodeVisitor;
 
-final class ParentClassResolver
+final class EntityClassResolver
 {
     public function __construct(
         private CachedPhpParser $cachedPhpParser
@@ -25,12 +25,12 @@ final class ParentClassResolver
         $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor(new NameResolver());
 
-        $parentClassNameCollectingNodeVisitor = new ParentClassNameCollectingNodeVisitor();
-        $nodeTraverser->addVisitor($parentClassNameCollectingNodeVisitor);
+        $entityClassNameCollectingNodeVisitor = new EntityClassNameCollectingNodeVisitor();
+        $nodeTraverser->addVisitor($entityClassNameCollectingNodeVisitor);
 
         $this->traverseFileInfos($phpFileInfos, $nodeTraverser, $progressClosure);
 
-        return $parentClassNameCollectingNodeVisitor->getParentClassNames();
+        return $entityClassNameCollectingNodeVisitor->getEntityClassNames();
     }
 
     /**
