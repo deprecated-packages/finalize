@@ -51,6 +51,8 @@ final class ClassTreeCommand extends Command
 
         $phpFileInfos = iterator_to_array($phpFinder);
 
+        $this->symfonyStyle->progressStart(count($phpFileInfos));
+
         $nodeTraverser = new NodeTraverser();
 
         $nameResolverNodeVisitor = new NameResolver();
@@ -62,6 +64,8 @@ final class ClassTreeCommand extends Command
         foreach ($phpFileInfos as $phpFileInfo) {
             $stmts = $this->parser->parse($phpFileInfo->getContents());
             $nodeTraverser->traverse($stmts);
+
+            $this->symfonyStyle->progressAdvance();
         }
 
         $parentClassNames = $parentClassNameCollectingNodeVisitor->getParentClassNames();
