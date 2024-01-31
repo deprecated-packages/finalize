@@ -14,6 +14,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 use TomasVotruba\Finalize\FileSystem\JsonFileSystem;
 use TomasVotruba\Finalize\NodeVisitor\ParentClassNameCollectingNodeVisitor;
 
@@ -44,29 +45,16 @@ final class ClassTreeCommand extends Command
     {
         $paths = (array) $input->getArgument('paths');
 
-        $phpFinder = Finder::create()
-            ->files()
-            ->in($paths)
-            ->name('*.php');
-
-        $phpFileInfos = iterator_to_array($phpFinder);
-
+        $phpFileInfos = $this->findPhpFileInfos($paths);
         $this->symfonyStyle->progressStart(count($phpFileInfos));
 
         $nodeTraverser = new NodeTraverser();
-
-        $nameResolverNodeVisitor = new NameResolver();
-        $nodeTraverser->addVisitor($nameResolverNodeVisitor);
+        $nodeTraverser->addVisitor(new NameResolver());
 
         $parentClassNameCollectingNodeVisitor = new ParentClassNameCollectingNodeVisitor();
         $nodeTraverser->addVisitor($parentClassNameCollectingNodeVisitor);
 
-        foreach ($phpFileInfos as $phpFileInfo) {
-            $stmts = $this->parser->parse($phpFileInfo->getContents());
-            $nodeTraverser->traverse($stmts);
-
-            $this->symfonyStyle->progressAdvance();
-        }
+        $this->traverseFileInfos($phpFileInfos, $nodeTraverser);
 
         $parentClassNames = $parentClassNameCollectingNodeVisitor->getParentClassNames();
 
@@ -78,5 +66,35 @@ final class ClassTreeCommand extends Command
         $this->symfonyStyle->success('Done');
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * @param SplFileInfo[] $phpFileInfos
+     */
+    private function traverseFileInfos(array $phpFileInfos, NodeTraverser $nodeTraverser): void
+    {
+        foreach ($phpFileInfos as $phpFileInfo) {
+            $stmts = $this->parser->parse($phpFileInfo->getContents());
+            if (! is_array($stmts)) {
+                continue;
+            }
+
+            $nodeTraverser->traverse($stmts);
+            $this->symfonyStyle->progressAdvance();
+        }
+    }
+
+    /**
+     * @param string[] $paths
+     * @return SplFileInfo[]
+     */
+    private function findPhpFileInfos(array $paths): array
+    {
+        $phpFinder = Finder::create()
+            ->files()
+            ->in($paths)
+            ->name('*.php');
+
+        return iterator_to_array($phpFinder);
     }
 }
