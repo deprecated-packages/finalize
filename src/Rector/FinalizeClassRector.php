@@ -17,21 +17,22 @@ final class FinalizeClassRector extends AbstractRector
         return new RuleDefinition(
             'Finalize a class, unless excluded parent class, or Doctrine entity. It requires to run "class-tree" command first, with .finalize.json file',
             [
-            new CodeSample(
-                <<<'CODE_SAMPLE'
+                new CodeSample(
+                    <<<'CODE_SAMPLE'
 class SomeClass
 {
 }
 CODE_SAMPLE
-                ,
-                <<<'CODE_SAMPLE'
+                    ,
+                    <<<'CODE_SAMPLE'
 final class SomeClass
 {
 }
 CODE_SAMPLE
-            ),
+                ),
 
-        ]);
+            ]
+        );
     }
 
     public function getNodeTypes(): array
@@ -50,7 +51,6 @@ CODE_SAMPLE
         }
 
         // load current project dumper parent and doctrine classes
-
 
         // make final
         $node->flags = $node->flags | Class_::MODIFIER_FINAL;
