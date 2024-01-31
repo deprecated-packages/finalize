@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\Finalize;
+namespace TomasVotruba\Finalize\PhpParser;
 
 use Nette\Utils\FileSystem;
 use PhpParser\Node\Stmt;

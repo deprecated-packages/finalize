@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace TomasVotruba\Finalize;
 
 use PhpParser\NodeTraverser;
-use PhpParser\NodeVisitor\NameResolver;
 use Symfony\Component\Finder\SplFileInfo;
+use TomasVotruba\Finalize\NodeTraverser\NodeTraverserFactory;
 use TomasVotruba\Finalize\NodeVisitor\ParentClassNameCollectingNodeVisitor;
+use TomasVotruba\Finalize\PhpParser\CachedPhpParser;
 
 final class ParentClassResolver
 {
@@ -22,11 +23,8 @@ final class ParentClassResolver
      */
     public function resolve(array $phpFileInfos, \Closure $progressClosure): array
     {
-        $nodeTraverser = new NodeTraverser();
-        $nodeTraverser->addVisitor(new NameResolver());
-
         $parentClassNameCollectingNodeVisitor = new ParentClassNameCollectingNodeVisitor();
-        $nodeTraverser->addVisitor($parentClassNameCollectingNodeVisitor);
+        $nodeTraverser = NodeTraverserFactory::createWithNodeVisitor($parentClassNameCollectingNodeVisitor);
 
         $this->traverseFileInfos($phpFileInfos, $nodeTraverser, $progressClosure);
 

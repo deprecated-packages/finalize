@@ -6,6 +6,7 @@ namespace TomasVotruba\Finalize\NodeVisitor;
 
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
+use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\NodeVisitorAbstract;
 
@@ -23,17 +24,13 @@ final class EntityClassNameCollectingNodeVisitor extends NodeVisitorAbstract
         }
 
         // must be named
-        if (! $node->namespacedName instanceof Node\Name) {
+        if (! $node->namespacedName instanceof Name) {
             return null;
         }
 
-        if ($this->hasEntityDocBlock($node)) {
+        if ($this->hasEntityDocBlock($node) || $this->hasEntityAttribute($node)) {
             $this->entityClassNames[] = $node->namespacedName->toString();
             return null;
-        }
-
-        if ($this->hasEntityAttribute($node)) {
-            $this->entityClassNames[] = $node->namespacedName->toString();
         }
 
         return null;
