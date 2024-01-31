@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace TomasVotruba\Finalize\Command;
 
-use PhpParser\NodeTraverser;
-use PhpParser\NodeVisitor\NameResolver;
-use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -16,19 +13,15 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use TomasVotruba\Finalize\FileSystem\JsonFileSystem;
-use TomasVotruba\Finalize\NodeVisitor\ParentClassNameCollectingNodeVisitor;
+use TomasVotruba\Finalize\ParentClassResolver;
 
 final class ClassTreeCommand extends Command
 {
-    private Parser $parser;
-
     public function __construct(
         private readonly SymfonyStyle $symfonyStyle,
+        private readonly ParentClassResolver $parentClassResolver,
     ) {
         parent::__construct();
-
-        $parserFactory = new ParserFactory();
-        $this->parser = $parserFactory->create(ParserFactory::PREFER_PHP7);
     }
 
     protected function configure(): void
@@ -48,15 +41,11 @@ final class ClassTreeCommand extends Command
         $phpFileInfos = $this->findPhpFileInfos($paths);
         $this->symfonyStyle->progressStart(count($phpFileInfos));
 
-        $nodeTraverser = new NodeTraverser();
-        $nodeTraverser->addVisitor(new NameResolver());
+        $progressClosure = function () {
+            $this->symfonyStyle->progressAdvance();
+        };
 
-        $parentClassNameCollectingNodeVisitor = new ParentClassNameCollectingNodeVisitor();
-        $nodeTraverser->addVisitor($parentClassNameCollectingNodeVisitor);
-
-        $this->traverseFileInfos($phpFileInfos, $nodeTraverser);
-
-        $parentClassNames = $parentClassNameCollectingNodeVisitor->getParentClassNames();
+        $parentClassNames = $this->parentClassResolver->resolve($phpFileInfos, $progressClosure);
 
         JsonFileSystem::writeCacheFile([
             'parent_class_names' => $parentClassNames,
@@ -67,22 +56,6 @@ final class ClassTreeCommand extends Command
         $this->symfonyStyle->success('Done');
 
         return Command::SUCCESS;
-    }
-
-    /**
-     * @param SplFileInfo[] $phpFileInfos
-     */
-    private function traverseFileInfos(array $phpFileInfos, NodeTraverser $nodeTraverser): void
-    {
-        foreach ($phpFileInfos as $phpFileInfo) {
-            $stmts = $this->parser->parse($phpFileInfo->getContents());
-            if (! is_array($stmts)) {
-                continue;
-            }
-
-            $nodeTraverser->traverse($stmts);
-            $this->symfonyStyle->progressAdvance();
-        }
     }
 
     /**
