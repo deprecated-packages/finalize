@@ -10,9 +10,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Finder\SplFileInfo;
 use TomasVotruba\Finalize\FileSystem\JsonFileSystem;
+use TomasVotruba\Finalize\FileSystem\PhpFilesFinder;
 use TomasVotruba\Finalize\ParentClassResolver;
 
 final class ClassTreeCommand extends Command
@@ -38,7 +37,7 @@ final class ClassTreeCommand extends Command
     {
         $paths = (array) $input->getArgument('paths');
 
-        $phpFileInfos = $this->findPhpFileInfos($paths);
+        $phpFileInfos = PhpFilesFinder::findPhpFileInfos($paths);
         $this->symfonyStyle->progressStart(count($phpFileInfos));
 
         $progressClosure = function () {
@@ -58,19 +57,5 @@ final class ClassTreeCommand extends Command
         $this->symfonyStyle->success('Done');
 
         return Command::SUCCESS;
-    }
-
-    /**
-     * @param string[] $paths
-     * @return SplFileInfo[]
-     */
-    private function findPhpFileInfos(array $paths): array
-    {
-        $phpFinder = Finder::create()
-            ->files()
-            ->in($paths)
-            ->name('*.php');
-
-        return iterator_to_array($phpFinder);
     }
 }
