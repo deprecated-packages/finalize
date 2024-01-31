@@ -15,6 +15,6 @@ final class JsonFileSystem
     public static function writeCacheFile(array $data): void
     {
         $jsonContents = Json::encode($data, pretty: true);
-        FileSystem::write(getcwd() . '/finalize.json', $jsonContents);
+        FileSystem::write(getcwd() . '/.finalize.json', $jsonContents);
     }
 }
