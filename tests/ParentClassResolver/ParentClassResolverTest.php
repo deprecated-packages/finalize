@@ -30,7 +30,7 @@ final class ParentClassResolverTest extends TestCase
         });
 
         $this->assertSame([
-            \SomeUnknownRootNamespaceClass::class,
+            \SomeUnknownRootNamespaceClass::class, // @phpstan-ignore-line
             SomeParentClass::class
         ], $parentClassNames);
     }
