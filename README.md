@@ -16,7 +16,7 @@ composer require tomasvotruba/finalize --dev
 1. First run command, that detects parent classes, entities etc.
 
 ```bash
-vendor/bin/finalize detect src tests
+vendor/bin/finalize detect src/ tests/
 ```
 
 It will generate `.finalize.json` files with all found classes, that should be skipped.
