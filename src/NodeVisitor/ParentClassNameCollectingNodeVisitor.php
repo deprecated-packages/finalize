@@ -43,6 +43,7 @@ final class ParentClassNameCollectingNodeVisitor extends NodeVisitorAbstract
         $namespacedClassNames = [];
         foreach($uniqueParentClassNames as $className) {
             try {
+                // @phpstan-ignore-next-line
                 $reflectionClass = new \ReflectionClass($className);
                 if ($reflectionClass->isInternal()) {
                     continue;
