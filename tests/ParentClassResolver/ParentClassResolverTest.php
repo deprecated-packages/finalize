@@ -29,6 +29,9 @@ final class ParentClassResolverTest extends TestCase
         $parentClassNames = $this->parentClassResolver->resolve($phpFileInfos, function () {
         });
 
-        $this->assertSame([SomeParentClass::class], $parentClassNames);
+        $this->assertSame([
+            \SomeUnknownRootNamespaceClass::class,
+            SomeParentClass::class
+        ], $parentClassNames);
     }
 }
