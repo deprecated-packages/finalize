@@ -11,7 +11,6 @@ use Rector\Rector\AbstractRector;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 use TomasVotruba\Finalize\Exception\ShouldNotHappenException;
-use TomasVotruba\Finalize\FileSystem\JsonFileSystem;
 
 final class FinalizeClassRector extends AbstractRector
 {
@@ -63,7 +62,6 @@ CODE_SAMPLE
         }
 
         $projectHash = Strings::webalize(getcwd());
-        $projectJson = JsonFileSystem::read($projectHash);
 
         $protectedClassNames = array_merge($projectJson['parent_class_names'], $projectJson['entity_class_names']);
 

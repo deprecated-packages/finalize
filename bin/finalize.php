@@ -21,7 +21,9 @@ if (file_exists(__DIR__ . '/../vendor/scoper-autoload.php')) {
 $containerFactory = new ContainerFactory();
 $container = $containerFactory->create();
 
+/** @var Application $application */
 $application = $container->make(Application::class);
+$application->setDefaultCommand('finalize', true);
 
 $exitCode = $application->run(new ArgvInput(), new ConsoleOutput());
 exit($exitCode);
