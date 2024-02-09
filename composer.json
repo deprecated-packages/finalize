@@ -13,10 +13,10 @@
         "illuminate/container": "^10.43",
         "webmozart/assert": "^1.11",
         "nikic/php-parser": "^4.8",
-        "nette/utils": "^4.0",
-        "rector/rector": "^0.19.5"
+        "nette/utils": "^4.0"
     },
     "require-dev": {
+        "rector/rector": "^1.0",
         "phpunit/phpunit": "^10.5",
         "phpstan/phpstan": "^1.10.56",
         "symplify/easy-coding-standard": "^12.1",
