@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace TomasVotruba\Finalize\Command;
 
+use Nette\Utils\FileSystem;
+use Nette\Utils\Strings;
+use PhpParser\NodeTraverser;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,14 +14,22 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use TomasVotruba\Finalize\EntityClassResolver;
 use TomasVotruba\Finalize\FileSystem\PhpFilesFinder;
+use TomasVotruba\Finalize\NodeVisitor\NeedForFinalizeNodeVisitor;
 use TomasVotruba\Finalize\ParentClassResolver;
+use TomasVotruba\Finalize\PhpParser\CachedPhpParser;
 
 final class FinalizeCommand extends Command
 {
+    /**
+     * @see https://regex101.com/r/Q5Nfbo/1
+     */
+    public const NEWLINE_CLASS_START_REGEX = '#^class\s#m';
+
     public function __construct(
         private readonly SymfonyStyle $symfonyStyle,
         private readonly ParentClassResolver $parentClassResolver,
         private readonly EntityClassResolver $entityClassResolver,
+        private readonly CachedPhpParser $cachedPhpParser
     ) {
         parent::__construct();
     }
@@ -53,17 +64,56 @@ final class FinalizeCommand extends Command
         $parentClassNames = $this->parentClassResolver->resolve($phpFileInfos, $progressClosure);
         $entityClassNames = $this->entityClassResolver->resolve($phpFileInfos, $progressClosure);
 
-        $this->symfonyStyle->newLine();
-        $this->symfonyStyle->note(sprintf('Found %d parent classes', count($parentClassNames)));
-        $this->symfonyStyle->note(sprintf('Found %d entity classes', count($entityClassNames)));
+        $this->symfonyStyle->progressFinish();
+
+        $this->symfonyStyle->writeln(sprintf(
+            'Found %d parent and %d entity classes',
+            count($parentClassNames),
+            count($entityClassNames)
+        ));
+
+        $this->symfonyStyle->newLine(1);
 
         $this->symfonyStyle->title('2. Finalizing safe classes');
 
-        dump($parentClassNames);
-        dump($entityClassNames);
-        die;
+        // @todo create a simple service returning bool
+        $finalizingNodeTraverser = new NodeTraverser();
+        $needForFinalizeNodeVisitor = new NeedForFinalizeNodeVisitor(
+            array_merge($parentClassNames, $entityClassNames)
+        );
 
-        $this->symfonyStyle->success('Done');
+        $finalizingNodeTraverser->addVisitor($needForFinalizeNodeVisitor);
+
+        $finalizedFilePaths = [];
+
+        foreach ($phpFileInfos as $phpFileInfo) {
+            // should be file be finalize, is not and is not excluded?
+            $stmts = $this->cachedPhpParser->parseFile($phpFileInfo->getRealPath());
+            $finalizingNodeTraverser->traverse($stmts);
+
+            if (! $needForFinalizeNodeVisitor->isNeeded()) {
+                continue;
+            }
+
+            $this->symfonyStyle->writeln(sprintf('File "%s" was finalized', $phpFileInfo->getRelativePath()));
+
+            $finalizedContents = Strings::replace(
+                $phpFileInfo->getContents(),
+                self::NEWLINE_CLASS_START_REGEX,
+                'final class '
+            );
+
+            $finalizedFilePaths[] = $phpFileInfo->getRelativePath();
+            FileSystem::write($phpFileInfo->getRealPath(), $finalizedContents);
+        }
+
+        if ($finalizedFilePaths === []) {
+            $this->symfonyStyle->success('Nothign to finalize');
+            return self::SUCCESS;
+        }
+
+        $this->symfonyStyle->listing($finalizedFilePaths);
+        $this->symfonyStyle->success(sprintf('%d classes were finalized', count($finalizedFilePaths)));
 
         return Command::SUCCESS;
     }

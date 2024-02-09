@@ -10,5 +10,3 @@ parameters:
         - */Fixture/*
 
     ignoreErrors:
-        # getcwd
-         - '#Parameter \#1 \$s of static method Nette\\Utils\\Strings::webalize\(\) expects string, string\|false given#'
