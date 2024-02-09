@@ -1,5 +1,7 @@
 # Finalize
 
+Note: this package might be added to https://github.com/rectorphp/swiss-knife, as it covers multiple useful scripts.
+
 Finalize classes in a safe way. We first look for those, that should be skipped:
 
 * classes who are in parent position
@@ -13,22 +15,19 @@ composer require tomasvotruba/finalize --dev
 
 ## Usage
 
-1. First run command, that detects parent classes, entities etc.
-
 ```bash
+<<<<<<< HEAD
 vendor/bin/finalize detect src/ tests/
+=======
+vendor/bin/finalize finalize src tests
+>>>>>>> 0155139 (misc)
 ```
 
-It will generate `.finalize.json` files with all found classes, that should be skipped.
+It will:
+
+1. generate `finalize.json` file in your temp directory with all found classes, that should be skipped
+2. it will go through your files and finalize every class, that is not in this list
 
 <br>
 
-2. Run Rector with config that contains `TomasVotruba\Finalize\Rector\FinalizeClassRector` rule.
-
-Rector uses data from `.finalize.json` to keep used classes non final and finalize only the safe ones:
-
-```bash
-vendor/bin/rector process --config vendor/tomasvotruba/finalize/config/prepared-rector.php
-```
-
-Do not keep this run in your main `rector.php`. Family map can change with any new class, e.g. some new class will come and it will be extended, and Rector would not finalize valid class.
+Happy coding!
