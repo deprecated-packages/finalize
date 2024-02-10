@@ -6,7 +6,6 @@ namespace TomasVotruba\Finalize;
 
 use PhpParser\NodeTraverser;
 use Symfony\Component\Finder\SplFileInfo;
-use TomasVotruba\Finalize\NodeTraverser\NodeTraverserFactory;
 use TomasVotruba\Finalize\NodeVisitor\EntityClassNameCollectingNodeVisitor;
 use TomasVotruba\Finalize\PhpParser\CachedPhpParser;
 
@@ -24,7 +23,9 @@ final class EntityClassResolver
     public function resolve(array $phpFileInfos, \Closure $progressClosure): array
     {
         $entityClassNameCollectingNodeVisitor = new EntityClassNameCollectingNodeVisitor();
-        $nodeTraverser = NodeTraverserFactory::createWithNodeVisitor($entityClassNameCollectingNodeVisitor);
+
+        $nodeTraverser = new NodeTraverser();
+        $nodeTraverser->addVisitor($entityClassNameCollectingNodeVisitor);
 
         $this->traverseFileInfos($phpFileInfos, $nodeTraverser, $progressClosure);
 

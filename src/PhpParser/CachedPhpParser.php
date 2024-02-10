@@ -6,6 +6,8 @@ namespace TomasVotruba\Finalize\PhpParser;
 
 use Nette\Utils\FileSystem;
 use PhpParser\Node\Stmt;
+use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\Parser;
 
 /**
@@ -34,6 +36,12 @@ final class CachedPhpParser
 
         $fileContents = FileSystem::read($filePath);
         $stmts = $this->phpParser->parse($fileContents);
+
+        if (is_array($stmts)) {
+            $nodeTraverser = new NodeTraverser();
+            $nodeTraverser->addVisitor(new NameResolver());
+            $nodeTraverser->traverse($stmts);
+        }
 
         $this->cachedStmts[$filePath] = $stmts ?? [];
 

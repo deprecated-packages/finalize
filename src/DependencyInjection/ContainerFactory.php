@@ -11,7 +11,7 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use TomasVotruba\Finalize\Command\DetectCommand;
+use TomasVotruba\Finalize\Command\FinalizeCommand;
 
 final class ContainerFactory
 {
@@ -31,7 +31,7 @@ final class ContainerFactory
         $container->singleton(Application::class, function (Container $container): Application {
             $application = new Application();
 
-            $vendorCommand = $container->make(DetectCommand::class);
+            $vendorCommand = $container->make(FinalizeCommand::class);
             $application->add($vendorCommand);
 
             // hide basic commands to make output clear
