@@ -17,8 +17,8 @@ jobs:
                         run: composer validate --ansi
 
                     -
-                        name: 'Run "class-tree" command'
-                        run: bin/finalize detect src --ansi
+                        name: 'Bare command'
+                        run: bin/finalize finalize src --ansi
 
                     -
                         name: 'PHPStan'
