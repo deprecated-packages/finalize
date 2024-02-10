@@ -16,11 +16,7 @@ composer require tomasvotruba/finalize --dev
 ## Usage
 
 ```bash
-<<<<<<< HEAD
-vendor/bin/finalize detect src/ tests/
-=======
 vendor/bin/finalize finalize src tests
->>>>>>> 0155139 (misc)
 ```
 
 It will:
