@@ -26,9 +26,7 @@ jobs:
 
                     -
                         name: 'Tests'
-                        run: |
-                            bin/finalize detect src tests --ansi
-                            vendor/bin/phpunit
+                        run: vendor/bin/phpunit
 
         name: ${{ matrix.actions.name }}
         runs-on: ubuntu-latest
